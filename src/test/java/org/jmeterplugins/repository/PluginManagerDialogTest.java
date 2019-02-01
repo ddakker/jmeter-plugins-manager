@@ -27,16 +27,18 @@ public class PluginManagerDialogTest {
         if (!GraphicsEnvironment.getLocalGraphicsEnvironment().isHeadlessInstance()) {
 //            URL url = PluginManagerTest.class.getResource("/lib_versions.json");
 //            JMeterUtils.setProperty("jpgc.repo.address", url.getPath());
-            System.setProperty("http.proxyHost", "localhost");
+            /*System.setProperty("http.proxyHost", "localhost");
             System.setProperty("http.proxyPort", "81");
             PluginManager aManager = new PluginManager();
-            aManager.load();
-            PluginManagerDialog frame = new PluginManagerDialog(aManager);
+            aManager.load();*/
+            PluginManagerDialog frame = new PluginManagerDialog();
 
-            frame.setPreferredSize(new Dimension(800, 600));
+//            frame.setPreferredSize(new Dimension(800, 500));
             frame.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.pack();
             frame.setVisible(true);
+            frame.setLocationRelativeTo(null);
             while (frame.isVisible()) {
                 Thread.sleep(1000);
             }
@@ -53,7 +55,7 @@ public class PluginManagerDialogTest {
             try {
                 JMeterUtils.setProperty("jpgc.repo.address", "http://httpstat.us/500");
                 PluginManager aManager = new PluginManager();
-                PluginManagerDialog frame = new PluginManagerDialog(aManager);
+                PluginManagerDialog frame = new PluginManagerDialog();
                 frame.componentShown(null);
                 List<JEditorPane> panes = new ArrayList<>();
                 getJEditorPane(frame, panes);

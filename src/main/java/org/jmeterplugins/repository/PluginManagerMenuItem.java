@@ -21,29 +21,29 @@ public class PluginManagerMenuItem extends JMenuItem implements ActionListener {
     private static final long serialVersionUID = -8708638472918746046L;
     private static final Logger log = LoggingManager.getLoggerForClass();
     private static PluginManagerDialog dialog;
-    private final PluginManager mgr;
+//    private final PluginManager mgr;
 
     public PluginManagerMenuItem() {
-        super("Plugins Manager");
+        super("Plugins Manager Memu");
         addActionListener(this);
 
-        mgr = new PluginManager(); // don't delay startup for longer that 1 second
-        LoggingHooker hooker = new LoggingHooker(mgr);
-        hooker.hook();
-        final JButton toolbarButton = getToolbarButton();
-        addToolbarIcon(toolbarButton);
+//        mgr = new PluginManager(); // don't delay startup for longer that 1 second
+//        LoggingHooker hooker = new LoggingHooker(mgr);
+//        hooker.hook();
+//        final JButton toolbarButton = getToolbarButton();
+//        addToolbarIcon(toolbarButton);
         setIcon(getPluginsIcon(false));
 
         new Thread("repo-downloader-thread") {
             @Override
             public void run() {
                 try {
-                    mgr.load();
+//                    mgr.load();
                 } catch (Throwable e) {
                     log.warn("Failed to load plugin updates info", e);
                 }
 
-                if (mgr.hasAnyUpdates()) {
+                /*if (mgr.hasAnyUpdates()) {
                     setText("Plugins Manager (has upgrades)");
                     log.info("Plugins Manager has upgrades: " + Arrays.toString(mgr.getUpgradablePlugins().toArray()));
                 }
@@ -53,8 +53,8 @@ public class PluginManagerMenuItem extends JMenuItem implements ActionListener {
                 toolbarButton.setIcon(getIcon22Px(hasAnyUpdates));
                 toolbarButton.setToolTipText(hasAnyUpdates ?
                         "Plugins Manager (has upgrades)" :
-                        "Plugins Manager"
-                );
+                        "Plugins Manager 333"
+                );*/
             }
         }.start();
     }
@@ -86,22 +86,22 @@ public class PluginManagerMenuItem extends JMenuItem implements ActionListener {
         }
     }
 
-    private JButton getToolbarButton() {
+    /*private JButton getToolbarButton() {
         boolean hasAnyUpdates = mgr.hasAnyUpdates();
         JButton button = new JButton(getIcon22Px(hasAnyUpdates));
         button.setToolTipText(hasAnyUpdates ?
                 "Plugins Manager (has upgrades)" :
-                "Plugins Manager"
+                "Plugins Manager Btt"
         );
         button.addActionListener(this);
         return button;
-    }
+    }*/
 
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (dialog == null) {
-            dialog = new PluginManagerDialog(mgr);
+            dialog = new PluginManagerDialog();
         }
 
         dialog.pack();
