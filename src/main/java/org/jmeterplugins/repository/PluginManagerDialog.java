@@ -1,19 +1,21 @@
 package org.jmeterplugins.repository;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.PrintStream;
+import org.apache.jorphan.gui.ComponentUtil;
+import org.apache.jorphan.logging.LoggingManager;
+import org.apache.log.Logger;
+import pe.kr.ddakker.test.examples.StreamGobbler;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-
-import org.apache.jorphan.gui.ComponentUtil;
-import org.apache.jorphan.logging.LoggingManager;
-import org.apache.log.Logger;
-import pe.kr.ddakker.test.examples.TextAreaOutputStream;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 
 public class PluginManagerDialog extends JDialog implements ActionListener, ComponentListener, HyperlinkListener {
     /**
@@ -35,6 +37,9 @@ public class PluginManagerDialog extends JDialog implements ActionListener, Comp
 //    private final ChangeListener cbNotifier;
 //    private final ChangeListener cbUpgradeNotifier;
     private JTable jTable = null;
+
+    JTextArea ta = null;
+    JScrollPane taScollPane = null;
 
 
     DefaultTableCellRenderer dcr = new DefaultTableCellRenderer() {
@@ -82,14 +87,20 @@ public class PluginManagerDialog extends JDialog implements ActionListener, Comp
 
 
         // 중간 콘솔 창
-        JTextArea ta = new JTextArea();
-        TextAreaOutputStream taos = new TextAreaOutputStream(ta, 1000000);
+        ta = new JTextArea();
+        ta.setText("setTest");
+        ta.append("\nappend");
+//        ta.setCaretPosition(ta.getDocument().getLength());
+        ta.setLineWrap(true);
+
+//        JTextArea ta = new JTextArea();
+        /*TextAreaOutputStream taos = new TextAreaOutputStream(ta, 1000000);
         PrintStream ps = new PrintStream(taos);
         System.setOut(ps);
-        System.setErr(ps);
+        System.setErr(ps);*/
 
 
-        JScrollPane taScollPane = new JScrollPane(ta);
+        taScollPane = new JScrollPane(ta);
 
 //        taScollPanel.setAutoscrolls(true);
         taScollPane.setPreferredSize(new Dimension(500, 300));
@@ -213,13 +224,29 @@ public class PluginManagerDialog extends JDialog implements ActionListener, Comp
         }
     }
 
-    private void btnInstall() {
-        System.out.println("btnInstall");
-//        MediocreExecJavac.main(null);
 
-        for (int i = 0; i < 1000; i++) {
-            System.out.println(i);
-        }
+    private void btnInstall() {
+        new Thread() {
+            public void run() {
+                try {
+                    System.out.println("1");
+                    Runtime rt = Runtime.getRuntime();
+                    System.out.println("2");
+                    Process proc = rt.exec("ansible-playbook -i /home/ddakker/dev/sources/ansible-examples/lamp_simple/hosts /home/ddakker/dev/sources/ansible-examples/lamp_simple/site.yml -e ansible_ssh_pass=pwd");
+                    System.out.println("3");
+                    StreamGobbler error = new StreamGobbler(proc.getErrorStream(), "ERROR", ta);
+                    StreamGobbler output = new StreamGobbler(proc.getInputStream(), "OUTPUT", ta);
+
+                    error.start();
+                    output.start();
+
+                    int exitVal = proc.waitFor();
+                    System.out.println("ExitValue: " + exitVal);
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
+            }
+        }.start();
     }
 
     /*private void setPlugins() {
@@ -368,20 +395,21 @@ public class PluginManagerDialog extends JDialog implements ActionListener, Comp
 
     @Override
     public void componentMoved(ComponentEvent e) {
-
+        System.out.println("componentMoved");
     }
 
     @Override
     public void componentShown(ComponentEvent evt) {
+        System.out.println("componentShown");
 //        loadPlugins();
 //        topAndDown.setVisible(!manager.allPlugins.isEmpty());
 //        failureLabel.setVisible(manager.allPlugins.isEmpty());
-        pack();
+//        pack();
     }
 
     @Override
     public void componentHidden(ComponentEvent e) {
-
+        System.out.println("componentHidden");
     }
 
     @Override
@@ -390,4 +418,7 @@ public class PluginManagerDialog extends JDialog implements ActionListener, Comp
             PluginsList.openInBrowser(e.getURL().toString());
         }
     }
+
+
+
 }
